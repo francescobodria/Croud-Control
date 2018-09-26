@@ -12,7 +12,7 @@ global {
 	// init: viene fatto girare solo all'inizio del'programma
 	init {
 		list<cell> free_cells <- cell where (each.is_free);
-		create people number: 99 {
+		create people number: 95 {
 			current_cell <- one_of(free_cells);
 			location <- current_cell.location;
 			current_cell.is_free <- false;
