@@ -12,17 +12,18 @@ global {
 	// init: viene fatto girare solo all'inizio del'programma
 	init {
 		list<cell> free_cells <- cell where (each.is_free);
-		create people number: 95 {
+		create people number: 5 {
 			current_cell <- one_of(free_cells);
 			location <- current_cell.location;
 			current_cell.is_free <- false;
 			remove current_cell from: free_cells;
+		
 		}		
 	}
 }
 
 // specie di agenti 
-species people skills: [moving] {
+species people {
 	cell current_cell;
 	cell possible_cell;
 	aspect default {
@@ -44,12 +45,16 @@ species people skills: [moving] {
 	}
 
 }
-
 //specie cella
 grid cell width: 10 height: 10 neighbors: 4 {
 	rgb color <- #white;
 	bool is_free <- true;
 } 
+
+species wall parent:cell{
+	rgb color <- #black;
+	bool is_free <- false;
+}
 
 //main loop che viene fatto girare ad ogni ciclo
 experiment Main type: gui {
