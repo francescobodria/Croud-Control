@@ -64,7 +64,7 @@ species people {
 	}
 	reflex move {
 		//lista di vicini per debug
-		possible_cell <- one_of(current_cell.neighbors);
+		possible_cell <- one_of(current_cell.neighbors where (not (each.is_wall)));
 		// il print in gama è write
 		//write possible_cell;
 		// setta le due variabili per il movimento
