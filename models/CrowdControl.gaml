@@ -76,6 +76,7 @@ species people {
 	}
 	
 	reflex move {
+<<<<<<< HEAD
 		//lista contenente tutti i vicini
 		list<cell> neigh <- current_cell.neighbors;
 		//lista delle probabilità da calcolare
@@ -101,6 +102,12 @@ species people {
 		//scelta della cella su cui voglio andare
 		int cell_choosen <- rnd_choice(probability);
 		possible_cell <- neigh[cell_choosen];
+=======
+		//lista di vicini per debug
+		possible_cell <- one_of(current_cell.neighbors where (not (each.is_wall)));
+		// il print in gama è write
+		//write possible_cell;
+>>>>>>> master
 		// setta le due variabili per il movimento
 		if (possible_cell.is_free = true and possible_cell.is_wall = false) {
 			current_cell.is_free <- true;
