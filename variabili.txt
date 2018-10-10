@@ -1,0 +1,33 @@
+GLOBAL
+file_mappa è il cdv dove ci mettiamo muri e uscite
+file_distanza_uscita è il csv contenente il gradiente delle distanze dalla exit più vicina
+number_of_people
+k_s coefficiente statico
+k coefficiente della scommessa di andare in una cella già occupata da un agente
+
+
+
+SPECIE
+Cella
+Persone
+
+
+
+VARIABILI CELLA
+is_free  true se è vuota, false se c’è un agente
+is_wall true se la cella è un muro
+is_exit true se la cella è uscita
+
+Static è un gradiente che indica la distanza dall’uscita più vicina 
+
+
+
+VARIABILI PERSONE
+
+current_cell indica la cella in cui l’agente si trova
+possible_cell indica la cella in cui l’agente vorrebbe andare data da probabilità
+
+
+RIFLESSO PERSONE
+move guarda chi sono i vicini, computa la probabilità di andare in una delle celle dove   non c’è il muro, e ne sceglie una. Se la cella scelta è vuota, libera la cella attuale e  metti in current_cell la cella nuova;
+Se la cella di destinazione è l’uscita, muori liberando la cella uscita
