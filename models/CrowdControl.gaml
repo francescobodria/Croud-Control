@@ -21,11 +21,17 @@ global {
 	geometry shape <- envelope(rectangle(grid_x_dimension,grid_y_dimension));
 	
 	//variabile per il numero di persone settata inizialmente a meta della sqrt dell'area
-	int number_of_people <- round(sqrt(grid_x_dimension*grid_y_dimension)/2);
+	int number_of_people <- 1;//round(sqrt(grid_x_dimension*grid_y_dimension)/2);
 	//coeffieciente statico
 	int ks <- 1;
+	//coefficiente dinamico
+	int kd <- 1;
 	//coefficiente scommessa
-	float k <- 0.5;
+	float k <- 1.0;
+	//evaporazione per ciclo
+	float evaporation_per_cycle <- 0.1;
+	//seed lasciato dall'agente
+	float seed <- 1.0;
 	
 	// init: viene fatto girare solo all'inizio del'programma
 	init {
@@ -56,6 +62,7 @@ global {
 		
 		//creazione specie people
 		create people number: number_of_people {
+			panic <- true;
 			current_cell <- one_of(free_cells);
 			location <- current_cell.location;
 			current_cell.is_free <- false;
@@ -64,6 +71,10 @@ global {
 		}		
 	
 	}
+	
+	reflex diffuse{
+		diffuse var:dinamic on:cell proportion:1 radius:1 propagation:gradient ;		
+	}	
 
 }
 
@@ -71,11 +82,16 @@ global {
 species people {
 	cell current_cell;
 	cell possible_cell;
+	bool panic;
 	aspect default {
 		draw circle(0.4) color: #black;
 	}
 	
-	reflex move {
+	reflex ferormone when: panic = true {
+		current_cell.dinamic <- current_cell.dinamic + seed;
+	}
+	
+	reflex move when: panic = true{
 		//lista contenente tutti i vicini
 		list<cell> neigh <- current_cell.neighbors;
 		//lista delle probabilità da calcolare
@@ -90,7 +106,7 @@ species people {
 			}
 			//se non è un muro calcola la probabilità
 			if not neigh[i].is_wall {
-				probability[i] <- exp(-ks*neigh[i].static)*epsilon;
+				probability[i] <- exp(ks*-neigh[i].static)*exp(kd*neigh[i].dinamic)*epsilon;
 			}
 		}
 		//normalizzazione della probabilità
@@ -121,18 +137,24 @@ species people {
 
 //specie cella
 grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
-	rgb color <- #white;
 	bool is_wall <- false;
 	bool is_exit <- false;
 	bool is_free <- true;
 	float static <-  0.0;
+	float dinamic <- 0.0 min: 0.0 update: dinamic-evaporation_per_cycle;
+	rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);
 } 
 
 
 //main loop che viene fatto girare ad ogni ciclo
 experiment Main type: gui {
 	//slider numero di persone
-	parameter "numero di persone" var:number_of_people;
+	parameter "numero di persone" var:number_of_people ;
+	parameter "ks" var:ks min: 0 max: 20 step:1; 
+	parameter "kd" var:kd min: 0 max: 20 step:1;
+	parameter "seed" var:seed;
+	parameter "evaporation" var:evaporation_per_cycle min:0.0 max:1.0 step:0.05;
+	parameter "k (scommessa)" var:k;
 	output {
 		display map {
 			grid cell lines: #black;	
