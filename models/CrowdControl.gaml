@@ -1,6 +1,6 @@
 /**
 * Name: CrowdControl
-* Authors: Bodria Francesco, Betti Lorenzo, Bruno ?
+* Authors: Bodria Francesco, Betti Lorenzo, Chicci Lorenzo
 * Description: Agent Based model for modelling crowd behaviour
 * Tags: 
 */
@@ -23,19 +23,21 @@ global {
 	//variabile per il numero di persone settata inizialmente a meta della sqrt dell'area
 	int number_of_people <- 1;//round(sqrt(grid_x_dimension*grid_y_dimension)/2);
 	//coeffieciente statico
-	int ks <- 1;
+	float ks <- 1.0;
 	//coefficiente dinamico
-	int kd <- 1;
+	float kd <- 1.0;
 	//coefficiente scommessa
 	float k <- 1.0;
 	//evaporazione per ciclo
 	float evaporation_per_cycle <- 0.1;
 	//seed lasciato dall'agente
-	float seed <- 1.0;
+	float ferormone <- 1.0;
+	//valore massimo distanza sulla griglia
+	int m <- int(max(matrix(file_distanza_uscita)));
 	
 	// init: viene fatto girare solo all'inizio del'programma
 	init {
-		// write number_of_people;
+		//write m;
 		// loading dei dati nella matrice per uscite e muri
 		matrix data <- matrix(file_mappa);
 		matrix data1 <- matrix(file_distanza_uscita);
@@ -87,10 +89,6 @@ species people {
 		draw circle(0.4) color: #black;
 	}
 	
-	reflex ferormone when: panic = true {
-		current_cell.dinamic <- current_cell.dinamic + seed;
-	}
-	
 	reflex move when: panic = true{
 		//lista contenente tutti i vicini
 		list<cell> neigh <- current_cell.neighbors;
@@ -106,7 +104,7 @@ species people {
 			}
 			//se non è un muro calcola la probabilità
 			if not neigh[i].is_wall {
-				probability[i] <- exp(ks*-neigh[i].static)*exp(kd*neigh[i].dinamic)*epsilon;
+				probability[i] <- exp((1-current_cell.static/(2*m))*ks*1/(neigh[i].static))*exp(current_cell.static/(2*m)*kd*neigh[i].dinamic)*epsilon;
 			}
 		}
 		//normalizzazione della probabilità
@@ -122,6 +120,7 @@ species people {
 		//write possible_cell;
 		// setta le due variabili per il movimento
 		if (possible_cell.is_free = true and possible_cell.is_wall = false) {
+			current_cell.dinamic <- current_cell.dinamic + ferormone;
 			current_cell.is_free <- true;
 			current_cell <- possible_cell; 
 			location <- current_cell.location;
@@ -142,7 +141,7 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 	bool is_free <- true;
 	float static <-  0.0;
 	float dinamic <- 0.0 min: 0.0 update: dinamic-evaporation_per_cycle;
-	rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);
+	rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);	
 } 
 
 
@@ -150,14 +149,14 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 experiment Main type: gui {
 	//slider numero di persone
 	parameter "numero di persone" var:number_of_people ;
-	parameter "ks" var:ks min: 0 max: 20 step:1; 
-	parameter "kd" var:kd min: 0 max: 20 step:1;
-	parameter "seed" var:seed;
+	parameter "ks" var:ks; 
+	parameter "kd" var:kd;
+	parameter "ferormone" var:ferormone;
 	parameter "evaporation" var:evaporation_per_cycle min:0.0 max:1.0 step:0.05;
 	parameter "k (scommessa)" var:k;
 	output {
 		display map {
-			grid cell lines: #black;	
+			grid cell lines: #black;
 			species people aspect: default ;
 		}
 	}

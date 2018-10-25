@@ -68,7 +68,7 @@ for i in range(n1//2-e1//2,n1//2-e1//2+e1):
 
 #print(exit_index)
 #print(data)
-np.savetxt("./include/mappa.csv", data, delimiter=",",fmt='%d')
+np.savetxt("./includes/mappa.csv", data, delimiter=",",fmt='%d')
 
 #print(exit_coord)
 
@@ -90,9 +90,9 @@ for i in range(n2):
 			cella_uscita[i,j]=-1
 
 #print(distanza_uscita)
-np.savetxt("./include/distanza_uscita.csv", distanza_uscita, delimiter=",",fmt='%d')
+np.savetxt("./includes/distanza_uscita.csv", distanza_uscita, delimiter=",",fmt='%d')
 #print(cella_uscita)
-np.savetxt("./include/numero_uscita.csv", cella_uscita, delimiter=",",fmt='%d')
+np.savetxt("./includes/numero_uscita.csv", cella_uscita, delimiter=",",fmt='%d')
 
 #fig = plt.figure()
 #plt.contourf(distanza_uscita)
