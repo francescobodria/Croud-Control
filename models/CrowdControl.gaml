@@ -104,13 +104,15 @@ species people {
 			}
 			//se non è un muro calcola la probabilità
 			if not neigh[i].is_wall {
-				probability[i] <- exp((1-current_cell.static/(2*m))*ks*1/(neigh[i].static))*exp(current_cell.static/(2*m)*kd*neigh[i].dinamic)*epsilon;
+				probability[i] <- exp(-(1-current_cell.static/(2*m))*ks*(neigh[i].static))*exp(current_cell.static/(2*m)*kd*neigh[i].dinamic)*epsilon;
 			}
 		}
 		//normalizzazione della probabilità
 		float norm <- sum(probability);
+		
 		loop i from: 0 to: length(neigh)-1{
 			probability[i] <- probability[i]/norm;
+			
 		}
 		//scelta della cella su cui voglio andare
 		int cell_choosen <- rnd_choice(probability);
@@ -152,7 +154,7 @@ experiment Main type: gui {
 	parameter "ks" var:ks; 
 	parameter "kd" var:kd;
 	parameter "ferormone" var:ferormone;
-	parameter "evaporation" var:evaporation_per_cycle min:0.0 max:1.0 step:0.05;
+	parameter "evaporation" var:evaporation_per_cycle min:0.0 max:1.0 step:0.02;
 	parameter "k (scommessa)" var:k;
 	output {
 		display map {
