@@ -39,7 +39,7 @@ global {
 	bool think <- true;
 	int R <-0;
 	int n<-10;
-	int Fmax <-6;
+	int Fmax <- 2;
 	
 
 	
@@ -67,6 +67,7 @@ global {
       		static <- float(data1[grid_x,grid_y]);
       		
       			}
+      		write grid_x_dimension;
 		// lista delle celle libere che non sono muri su cui metteremo gli agenti
 		list<cell> free_cells <- cell where ((each.is_free) and not (each.is_wall));
 		
@@ -157,10 +158,31 @@ species people {
 		}
 		//manca morte
 		//forze a zero per ciclo dopo
+		self.forza <- [0.0,0.0,0.0,0.0];
 		
 		//se sono all'uscita imposto la cella libera e crepa
 		if current_cell.is_exit{
 			current_cell.is_free <- true;
+			
+			if R= number_of_people-1 {		
+				R<-0;
+		
+			if think = true {
+			force<-true;
+			think <- false;
+			}
+			else if force = true {
+				run <-true;
+				force<-false;
+				}
+			else if run = true {
+				run <-false;
+				think <- true;
+				}
+		
+			}
+			
+			number_of_people <- number_of_people-1;
 			do die;
 		}
 	
@@ -183,7 +205,7 @@ species people {
 			 if length(nord)!=0{
 			  let no <- attributes(nord[0])['direzione']; 			 	
 			  if no= [0.0,0.0,1.0,0.0]{
-			  	self.forza <- self.forza+[0.0,0.0,1/i,0.0];	 
+			  	self.forza[2] <- self.forza[2]+1/i;	 
 			 }
 			 }
 			 
@@ -198,7 +220,7 @@ species people {
 			 if length(sud)!=0{
 			  let su <- attributes(sud[0])['direzione']; 			 	
 			  if su= [1.0,0.0,0.0,0.0]{
-			  	self.forza <- self.forza+[1/i,0.0,0.0,0.0];	 
+			  	self.forza[0] <- self.forza[0]+1/i;	 
 			 }
 			 }
 			 
@@ -213,7 +235,8 @@ species people {
 			 if length(est)!=0{
 			  let es <- attributes(est[0])['direzione']; 			 	
 			  if es= [0.0,0.0,0.0,1.0]{
-			  	self.forza <- self.forza+[0.0,0.0,0.0,1/i];	 
+			  	self.forza[3] <- self.forza[3]+1/i;	 
+
 			 }
 			 }
 			 
@@ -228,7 +251,8 @@ species people {
 			 if length(ovest)!=0{
 			  let ov <- attributes(ovest[0])['direzione']; 			 	
 			  if ov= [0.0,1.0,0.0,0.0]{
-			  	self.forza <- self.forza+[0.0,1/i,0.0,0.0];	 
+			  	self.forza[1] <- self.forza[1]+1/i;	 
+
 			 }
 			 }
 	
@@ -290,38 +314,33 @@ species people {
 	
 	
 	reflex count {
-		R<- R+1;
+		
+		if R= number_of_people-1 {		
+			R<-0;
+		
+			if think = true {
+			force<-true;
+			think <- false;
+			}
+			else if force = true {
+				run <-true;
+				force<-false;
+				}
+			else if run = true {
+				run <-false;
+				think <- true;
+				}
+		
+			}
+		else{
+			R <- R+1;
+		
+		}
 	
-		if R= length(agents_inside(world))-(grid_x_dimension*grid_y_dimension) {		
-		R<-0;
-		
-		if think = true {
-		force<-true;
-		think <- false;
-		}
-		else if force = true {
-			run <-true;
-			force<-false;
-			}
-		else if run = true {
-			run <-false;
-			think <- true;
-			}
-		
-		}
-		}
-		
 	}
 	
-	
-	
-	
-	
-	
-	
-	
+	}	
 
- 
 
 //specie cella
 grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
@@ -330,7 +349,7 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 	bool is_free <- true;
 	float static <-  0.0;
 	float dinamic <- 0.0 min: 0.0 update: dinamic-evaporation_per_cycle;
-	rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);	
+	//rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);	
 } 
 
 
