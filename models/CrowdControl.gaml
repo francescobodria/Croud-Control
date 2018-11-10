@@ -39,7 +39,7 @@ global {
 	bool think <- true;
 	int R <-0;
 	int n<-10;
-	int Fmax <- 2;
+	float Fmax <- 2.0;
 	
 
 	
@@ -67,7 +67,6 @@ global {
       		static <- float(data1[grid_x,grid_y]);
       		
       			}
-      		write grid_x_dimension;
 		// lista delle celle libere che non sono muri su cui metteremo gli agenti
 		list<cell> free_cells <- cell where ((each.is_free) and not (each.is_wall));
 		
@@ -92,53 +91,48 @@ global {
 // specie di agenti 
 
 species people {
+	rgb color <- #black;
 	cell current_cell;
 	cell possible_cell;
 	bool panic;
 	list<float> direzione <- [0.0,0.0,0.0,0.0];
 	list<float> forza <-[0.0,0.0,0.0,0.0];
 	float danno;
+	float debug;
+	bool force_driven <- false;
 	aspect default {
-		draw circle(0.4) color: #black;
+		draw circle(0.4) color: color;
 	}
 	
-	
-	
-	
-	
 	reflex move when: run = true{
-		//lista di vicini per debug
-		// il print in gama è write
-		//write possible_cell;
 		// setta le due variabili per il movimento
-		
-
 		
 		//calcolo la somma delle forze verticali e orizzontali. N.B: se vertical>0 vuol dire che sono spinto più verso nord che verso sud.
 		// se horizontal >0 vuol dire che sono spinto più verso est che verso ovest.
 		
-		let vertical <- forza[0]-forza[2];
-		let horizontal <-forza[1]-forza[3];
+		let vertical <- self.forza[0]-self.forza[2];
+		let horizontal <-self.forza[1]-self.forza[3];
+		self.color <- #black;
+		self.force_driven <- false;
+		self.debug <- vertical;
 		
 		//se uno dei due supera la soglia valuto chi è il max e dal segno capisco se vengo spinto verso ovest, est, nord,sud. Imposto quindi possible cell sul valore nuovo.
 		if (abs(vertical)> Fmax or abs(horizontal)> Fmax){
+			self.color <- #red;
+			self.force_driven <- true;
 			if (abs(vertical)> abs(horizontal)){
-				let segno <- vertical/abs(vertical);
-				possible_cell <- cell closest_to {current_cell.grid_x,current_cell.grid_y-segno};
+				possible_cell <- cell at {current_cell.grid_x,current_cell.grid_y-signum(vertical)};
 			}
 			if (abs(vertical)< abs(horizontal)){
-				let segno <-horizontal/abs(horizontal);
-				possible_cell <- cell closest_to {current_cell.grid_x+segno,current_cell.grid_y};
+				possible_cell <- cell at {current_cell.grid_x+signum(horizontal),current_cell.grid_y};
 			}
 			if (abs(vertical)= abs(horizontal)){
 				let r <- rnd(0.0,1.0);
 				if (r<1/2){
-				let segno <-horizontal/abs(horizontal);
-				possible_cell <- cell closest_to {current_cell.grid_x+segno,current_cell.grid_y};					
+				possible_cell <- cell at {current_cell.grid_x+signum(horizontal),current_cell.grid_y};					
 				}
 				if (r>=1/2){
-				let segno <- vertical/abs(vertical);
-				possible_cell <- cell closest_to {current_cell.grid_x,current_cell.grid_y-segno};
+				possible_cell <- cell at {current_cell.grid_x,current_cell.grid_y-signum(vertical)};
 				}
 	
 			}
@@ -168,14 +162,17 @@ species people {
 				R<-0;
 		
 			if think = true {
+			write('think');
 			force<-true;
 			think <- false;
 			}
 			else if force = true {
+				write('force');
 				run <-true;
 				force<-false;
 				}
 			else if run = true {
+				write('run');
 				run <-false;
 				think <- true;
 				}
@@ -194,7 +191,6 @@ species people {
 		
 		//aggiorno le forze da nord:
 		
-		
 		loop i from: 1 to: n {
 			
 		//aggiorno le forze da nord::
@@ -203,13 +199,13 @@ species people {
 			list<agent> nord <- agents_inside(cell closest_to {current_cell.grid_x,current_cell.grid_y-i});
 			 
 			 if length(nord)!=0{
-			  let no <- attributes(nord[0])['direzione']; 			 	
-			  if no= [0.0,0.0,1.0,0.0]{
-			  	self.forza[2] <- self.forza[2]+1/i;	 
-			 }
+			  	let no <- attributes(nord[0])['direzione']; 			 	
+			  	if no= [0.0,0.0,1.0,0.0]{
+			  		self.forza[2] <- self.forza[2]+1/i;	 
+			 	}
 			 }
 			 
-			 }
+		}
 			
 			
 		//aggiorno le forze da sud:
@@ -218,13 +214,13 @@ species people {
 			list<agent> sud <- agents_inside(cell closest_to {current_cell.grid_x,current_cell.grid_y+i});
 			 
 			 if length(sud)!=0{
-			  let su <- attributes(sud[0])['direzione']; 			 	
-			  if su= [1.0,0.0,0.0,0.0]{
-			  	self.forza[0] <- self.forza[0]+1/i;	 
-			 }
+			  	let su <- attributes(sud[0])['direzione']; 			 	
+			  	if su= [1.0,0.0,0.0,0.0]{
+			  		self.forza[0] <- self.forza[0]+1/i;	 
+			 	}
 			 }
 			 
-			 }
+		}
 			
 		//aggiorno le forze da est:
 		
@@ -233,14 +229,14 @@ species people {
 			list<agent> est <- agents_inside(cell closest_to {current_cell.grid_x+i,current_cell.grid_y});
 			 
 			 if length(est)!=0{
-			  let es <- attributes(est[0])['direzione']; 			 	
-			  if es= [0.0,0.0,0.0,1.0]{
-			  	self.forza[3] <- self.forza[3]+1/i;	 
+			  	let es <- attributes(est[0])['direzione']; 			 	
+			  	if es= [0.0,0.0,0.0,1.0]{
+			  		self.forza[3] <- self.forza[3]+1/i;	 
 
-			 }
+			 	}
 			 }
 			 
-			 }
+		}
 			
 			
 		
@@ -249,21 +245,18 @@ species people {
 		list<agent> ovest <- agents_inside(cell closest_to {current_cell.grid_x-i,current_cell.grid_y});
 			 
 			 if length(ovest)!=0{
-			  let ov <- attributes(ovest[0])['direzione']; 			 	
-			  if ov= [0.0,1.0,0.0,0.0]{
-			  	self.forza[1] <- self.forza[1]+1/i;	 
-
+			  	let ov <- attributes(ovest[0])['direzione']; 			 	
+			  	if ov= [0.0,1.0,0.0,0.0]{
+			  		self.forza[1] <- self.forza[1]+1/i;	 
+			 	}
 			 }
-			 }
-	
+		
 		}
+		
 		
 		}
 	
 	}	
-	
-
-	
 	
 	reflex choose when: think = true {
 		//lista contenente tutti i vicini
@@ -295,22 +288,19 @@ species people {
 		//associa vettore direzione alla scelta fatta
 		// [N,E,S,W]
 		if possible_cell.grid_x = current_cell.grid_x+1{
-			direzione <- [0.0,1.0,0.0,0.0];
+			self.direzione <- [0.0,1.0,0.0,0.0];
 		}
 		if possible_cell.grid_x  = current_cell.grid_x -1{
-			direzione <- [0.0,0.0,0.0,1.0];
+			self.direzione <- [0.0,0.0,0.0,1.0];
 		}
 		if possible_cell.grid_y  = current_cell.grid_y +1{
-			direzione <- [0.0,0.0,1.0,0.0];
+			self.direzione <- [0.0,0.0,1.0,0.0];
 		}
 		if possible_cell.grid_y  = current_cell.grid_y -1{
-			direzione <- [1.0,0.0,0.0,0.0];
+			self.direzione <- [1.0,0.0,0.0,0.0];
 		}
 	
-	
-	
 	}
-	
 	
 	
 	reflex count {
@@ -319,14 +309,17 @@ species people {
 			R<-0;
 		
 			if think = true {
+			write('think');
 			force<-true;
 			think <- false;
 			}
 			else if force = true {
+				write('force');
 				run <-true;
 				force<-false;
 				}
 			else if run = true {
+				write('run');
 				run <-false;
 				think <- true;
 				}
@@ -360,8 +353,10 @@ experiment Main type: gui {
 	parameter "ks" var:ks; 
 	parameter "kd" var:kd;
 	parameter "ferormone" var:ferormone;
-	parameter "evaporation" var:evaporation_per_cycle min:0.0 max:1.0 step:0.05;
+	parameter "evaporation" var:evaporation_per_cycle;
 	parameter "k (scommessa)" var:k;
+	parameter "F max" var:Fmax;
+	parameter "n" var:n;
 	output {
 		display map {
 			grid cell lines: #black;
