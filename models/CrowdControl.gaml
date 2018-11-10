@@ -120,19 +120,20 @@ species people {
 		if (abs(vertical)> Fmax or abs(horizontal)> Fmax){
 			self.color <- #red;
 			self.force_driven <- true;
+		
 			if (abs(vertical)> abs(horizontal)){
-				possible_cell <- cell at {current_cell.grid_x,current_cell.grid_y-signum(vertical)};
+				possible_cell <- cell({current_cell.grid_x,current_cell.grid_y-signum(vertical)});
 			}
 			if (abs(vertical)< abs(horizontal)){
-				possible_cell <- cell at {current_cell.grid_x+signum(horizontal),current_cell.grid_y};
+				possible_cell <- cell({current_cell.grid_x+signum(horizontal),current_cell.grid_y});
 			}
 			if (abs(vertical)= abs(horizontal)){
 				let r <- rnd(0.0,1.0);
 				if (r<1/2){
-				possible_cell <- cell at {current_cell.grid_x+signum(horizontal),current_cell.grid_y};					
+				possible_cell <- cell({current_cell.grid_x+signum(horizontal),current_cell.grid_y});					
 				}
 				if (r>=1/2){
-				possible_cell <- cell at {current_cell.grid_x,current_cell.grid_y-signum(vertical)};
+				possible_cell <- cell({current_cell.grid_x,current_cell.grid_y-signum(vertical)});
 				}
 	
 			}
