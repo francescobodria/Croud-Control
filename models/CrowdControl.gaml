@@ -197,7 +197,8 @@ species people {
 		//aggiorno le forze da nord::
 		
 		if (current_cell.grid_y-i>0){
-			list<agent> nord <- agents_inside(cell closest_to {current_cell.grid_x,current_cell.grid_y-i});
+			
+			list<agent> nord <- agents_inside(cell({current_cell.grid_x,current_cell.grid_y-i}));
 			 
 			 if length(nord)!=0{
 			  	let no <- attributes(nord[0])['direzione']; 			 	
@@ -205,14 +206,21 @@ species people {
 			  		self.forza[2] <- self.forza[2]+1/i;	 
 			 	}
 			 }
+			 else {
+			 	break;
+			 }
 			 
 		}
+		
+		}
 			
+		loop i from: 1 to: n {
 			
 		//aggiorno le forze da sud:
 		
 		if (current_cell.grid_y+i<grid_y_dimension){
-			list<agent> sud <- agents_inside(cell closest_to {current_cell.grid_x,current_cell.grid_y+i});
+			
+			list<agent> sud <- agents_inside(cell({current_cell.grid_x,current_cell.grid_y+i}));
 			 
 			 if length(sud)!=0{
 			  	let su <- attributes(sud[0])['direzione']; 			 	
@@ -220,14 +228,21 @@ species people {
 			  		self.forza[0] <- self.forza[0]+1/i;	 
 			 	}
 			 }
+			 else {
+			 	break;
+			 }
 			 
 		}
+		
+		}
+		
+		loop i from: 1 to: n {
 			
 		//aggiorno le forze da est:
 		
 		if (current_cell.grid_x+i<grid_x_dimension){
 		
-			list<agent> est <- agents_inside(cell closest_to {current_cell.grid_x+i,current_cell.grid_y});
+			list<agent> est <- agents_inside(cell({current_cell.grid_x+i,current_cell.grid_y}));
 			 
 			 if length(est)!=0{
 			  	let es <- attributes(est[0])['direzione']; 			 	
@@ -236,14 +251,19 @@ species people {
 
 			 	}
 			 }
+			 else {
+			 	break;
+			 }
 			 
 		}
+		
+		}
 			
-			
+		loop i from: 1 to: n {	
 		
 		//aggiorno le forze da ovest:
 		if (current_cell.grid_x-i>0){
-		list<agent> ovest <- agents_inside(cell closest_to {current_cell.grid_x-i,current_cell.grid_y});
+		list<agent> ovest <- agents_inside(cell({current_cell.grid_x-i,current_cell.grid_y}));
 			 
 			 if length(ovest)!=0{
 			  	let ov <- attributes(ovest[0])['direzione']; 			 	
@@ -251,12 +271,14 @@ species people {
 			  		self.forza[1] <- self.forza[1]+1/i;	 
 			 	}
 			 }
-		
-		}
-		
+			 else {
+			 	break;
+			 }
 		
 		}
 	
+		}
+		
 	}	
 	
 	reflex choose when: think = true {
