@@ -86,6 +86,11 @@ global {
 		diffuse var:dinamic on:cell proportion:1 radius:1 propagation:gradient ;		
 	}	
 
+	// quando non ci sono più persone salva il numero di cicli effettuati fino ad ora in un file txt e termina la simulazione
+	reflex save_result when: (number_of_people=0){
+		save (string(cycle)) to: "tempo_di_uscita.txt" type:"text" rewrite: false;
+		do die; 
+	}
 }
 
 // specie di agenti 
@@ -163,17 +168,17 @@ species people {
 				R<-0;
 		
 			if think = true {
-			write('think');
+			//write('think');
 			force<-true;
 			think <- false;
 			}
 			else if force = true {
-				write('force');
+				//write('force');
 				run <-true;
 				force<-false;
 				}
 			else if run = true {
-				write('run');
+				//write('run');
 				run <-false;
 				think <- true;
 				}
@@ -332,17 +337,17 @@ species people {
 			R<-0;
 		
 			if think = true {
-			write('think');
+			//write('think');
 			force<-true;
 			think <- false;
 			}
 			else if force = true {
-				write('force');
+				//write('force');
 				run <-true;
 				force<-false;
 				}
 			else if run = true {
-				write('run');
+				//write('run');
 				run <-false;
 				think <- true;
 				}
@@ -371,6 +376,8 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 
 //main loop che viene fatto girare ad ogni ciclo
 experiment Main type: gui {
+	//scommentare in caso di salvataggio immagini
+	//float minimum_cycle_duration <- 0.1;
 	//slider numero di persone
 	parameter "numero di persone" var:number_of_people ;
 	parameter "ks" var:ks; 
@@ -380,8 +387,16 @@ experiment Main type: gui {
 	parameter "k (scommessa)" var:k;
 	parameter "F max" var:Fmax;
 	parameter "n" var:n;
+	
+	//crea multiple simulazioni con random seed differenti
+	init {
+		loop i from: 1 to: 10{
+			create simulation with:[seed::rnd(1.0,10.0)];
+		} 
+	}
 	output {
-		display map {
+		//scommentare autosave se si vogliono salvare le immagini ogni 3 cicli, scommentare anche poco più sopra minimum cycle duration per un salavataggio migliore
+		display map refresh: every(3 #cycles){// autosave:every(3 #cycles){
 			grid cell lines: #black;
 			species people aspect: default ;
 		}
