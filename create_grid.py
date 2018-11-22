@@ -67,6 +67,7 @@ for i in range(n1//2-e1//2,n1//2-e1//2+e1):
 	exit_index.append(index[n2-1,i])
 
 #print(exit_index)
+#print(exit_coord)
 #print(data)
 np.savetxt("./includes/mappa.csv", data, delimiter=",",fmt='%d')
 
@@ -80,8 +81,9 @@ for i in range(n2):
 		if data[i,j]==0:
 			m = []
 			for k in range(6):
-				for l in range(e1):
-					m.append(cityblock([i,j],exit_coord[str(k)][l]))
+			#	for l in range(e1):
+			#		m.append(euclidean([i,j],exit_coord[str(k)][l]))
+				m.append(euclidean([i,j],exit_coord[str(k)][len(exit_coord[str(k)])//2]))
 			distanza_uscita[i,j]=min(m)
 			cella_uscita[i,j]=exit_index[np.argmin(m)]
 
@@ -90,7 +92,7 @@ for i in range(n2):
 			cella_uscita[i,j]=-1
 
 #print(distanza_uscita)
-np.savetxt("./includes/distanza_uscita.csv", distanza_uscita, delimiter=",",fmt='%d')
+np.savetxt("./includes/distanza_uscita.csv", distanza_uscita, delimiter=",",fmt='%1.2f')
 #print(cella_uscita)
 np.savetxt("./includes/numero_uscita.csv", cella_uscita, delimiter=",",fmt='%d')
 
