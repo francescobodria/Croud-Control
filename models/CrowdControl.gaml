@@ -21,7 +21,8 @@ global {
 	geometry shape <- envelope(rectangle(grid_x_dimension,grid_y_dimension));
 	
 	//variabile per il numero di persone settata inizialmente a meta della sqrt dell'area
-	int number_of_people <- 1;//round(sqrt(grid_x_dimension*grid_y_dimension)/2);
+	int number_of_people <- 1000;//round(sqrt(grid_x_dimension*grid_y_dimension)/2);
+	int number_of_initial_people <- number_of_people;
 	//coeffieciente statico
 	float ks <- 1.0;
 	//coefficiente dinamico
@@ -29,7 +30,7 @@ global {
 	//coefficiente scommessa
 	float k <- 1.0;
 	//evaporazione per ciclo
-	float evaporation_per_cycle <- 0.1;
+	float evaporation_per_cycle <- 0.12;
 	//seed lasciato dall'agente
 	float ferormone <- 1.0;
 	//valore massimo distanza sulla griglia
@@ -39,7 +40,8 @@ global {
 	bool think <- true;
 	int R <-0;
 	int n<-10;
-	float Fmax <- 2.0;
+	float Fmax <- 0.7;
+	float soglia <- 3.0;
 	
 
 	
@@ -60,7 +62,7 @@ global {
       			}
       		// se è 2 è un uscita
       		if (grid_value = 2){
-      			color <- #red;
+      			color <- #green;
       			is_exit <- true;
       			}
       		//imposta il campo scalare
@@ -88,9 +90,13 @@ global {
 
 	// quando non ci sono più persone salva il numero di cicli effettuati fino ad ora in un file txt e termina la simulazione
 	reflex save_result when: (number_of_people=0){
-		save (string(cycle)) to: "tempo_di_uscita.txt" type:"text" rewrite: false;
+		save (string(cycle)+' '+string(evaporation_per_cycle)+' '+string(number_of_initial_people)) to: "tempo_di_uscita.txt" type:"text" rewrite: false;
 		do die; 
 	}
+	//reflex save_result_2 when: (cycle = 2000 #cycles){
+	//	save (string(cycle)+' '+string(evaporation_per_cycle)+' '+string(number_of_initial_people)) to: "tempo_di_uscita.txt" type:"text" rewrite: false;
+	//	do die; 
+	//}
 }
 
 // specie di agenti 
@@ -143,26 +149,12 @@ species people {
 	
 			}
 		
-		}
-		if (possible_cell.is_free = true and possible_cell.is_wall = false) {
-			current_cell.dinamic <- current_cell.dinamic + ferormone;
-			current_cell.is_free <- true;
-			current_cell <- possible_cell; 
-			location <- current_cell.location;
-			current_cell.is_free <- false;
-		}
-		
 		// assegno il danno. potremmo pensare di assegnarlo solo nel caso in cui l'agente trovi la cella di arrivo occupata, ovvero non riesce a spostarsi.
 		if (possible_cell.is_free = false or possible_cell.is_wall = true) {
 		danno <- forza[0]+forza[1]+forza[2]+forza[3];
 		}
-		//manca morte
-		//forze a zero per ciclo dopo
-		self.forza <- [0.0,0.0,0.0,0.0];
 		
-		//se sono all'uscita imposto la cella libera e crepa
-		if current_cell.is_exit{
-			current_cell.is_free <- true;
+		if danno >= soglia{
 			
 			if R= number_of_people-1 {		
 				R<-0;
@@ -186,8 +178,30 @@ species people {
 			}
 			
 			number_of_people <- number_of_people-1;
+			
+			current_cell.is_free <- false;
+
+			current_cell.color <- #red;
+			
 			do die;
+		} 
+		
+		//se sono all'uscita imposto la cella libera e crepa
+		
 		}
+		if (possible_cell.is_free = true and possible_cell.is_wall = false) {
+			current_cell.dinamic <- current_cell.dinamic + ferormone;
+			current_cell.is_free <- true;
+			current_cell <- possible_cell; 
+			location <- current_cell.location;
+			current_cell.is_free <- false;
+		}
+		
+		//manca morte
+		//forze a zero per ciclo dopo
+		self.forza <- [0.0,0.0,0.0,0.0];
+		
+		
 	
 	}	
 	
@@ -287,6 +301,35 @@ species people {
 	}	
 	
 	reflex choose when: think = true {
+		
+		if current_cell.is_exit{
+			current_cell.is_free <- true;
+			
+			if R= number_of_people-1 {		
+				R<-0;
+		
+			if think = true {
+			//write('think');
+			force<-true;
+			think <- false;
+			}
+			else if force = true {
+				//write('force');
+				run <-true;
+				force<-false;
+				}
+			else if run = true {
+				//write('run');
+				run <-false;
+				think <- true;
+				}
+		
+			}
+			
+			number_of_people <- number_of_people-1;
+			do die;
+		}
+		
 		//lista contenente tutti i vicini
 		list<cell> neigh <- current_cell.neighbors;
 		//lista delle probabilità da calcolare
@@ -306,6 +349,7 @@ species people {
 		}
 		//normalizzazione della probabilità
 		float norm <- sum(probability);
+		
 		loop i from: 0 to: length(neigh)-1{
 			probability[i] <- probability[i]/norm;
 		}
@@ -365,6 +409,7 @@ species people {
 
 //specie cella
 grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
+	rgb color <- #white;
 	bool is_wall <- false;
 	bool is_exit <- false;
 	bool is_free <- true;
@@ -375,9 +420,10 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 
 
 //main loop che viene fatto girare ad ogni ciclo
-experiment Main type: gui {
+experiment Main type: gui autorun:true{
 	//scommentare in caso di salvataggio immagini
 	//float minimum_cycle_duration <- 0.1;
+	int number_of_simulations <- 1;
 	//slider numero di persone
 	parameter "numero di persone" var:number_of_people ;
 	parameter "ks" var:ks; 
@@ -387,12 +433,16 @@ experiment Main type: gui {
 	parameter "k (scommessa)" var:k;
 	parameter "F max" var:Fmax;
 	parameter "n" var:n;
+	parameter "soglia_morte" var:soglia;
 	
 	//crea multiple simulazioni con random seed differenti
 	init {
-		loop i from: 1 to: 10{
-			create simulation with:[seed::rnd(1.0,10.0)];
-		} 
+		if number_of_simulations > 1{
+			loop i from: 1 to: number_of_simulations-1{
+				create simulation with:[evaporation_per_cycle::0.12+i/100];
+			} 
+		}
+		
 	}
 	output {
 		//scommentare autosave se si vogliono salvare le immagini ogni 3 cicli, scommentare anche poco più sopra minimum cycle duration per un salavataggio migliore
