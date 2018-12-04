@@ -104,7 +104,6 @@ species people {
 	list<float> direzione <- [0.0,0.0,0.0,0.0];
 	list<float> forza <-[0.0,0.0,0.0,0.0];
 	float danno;
-	float debug;
 	bool force_driven <- false;
 	aspect default {
 		draw circle(0.4) color: color;
@@ -120,7 +119,6 @@ species people {
 		let horizontal <-self.forza[1]-self.forza[3];
 		self.color <- #black;
 		self.force_driven <- false;
-		self.debug <- vertical;
 		
 		//se uno dei due supera la soglia valuto chi è il max e dal segno capisco se vengo spinto verso ovest, est, nord,sud. Imposto quindi possible cell sul valore nuovo.
 		if (abs(vertical)> Fmax or abs(horizontal)> Fmax){
@@ -392,7 +390,7 @@ grid cell width: grid_x_dimension height: grid_y_dimension neighbors: 4 {
 	bool is_exit <- false;
 	bool is_free <- true;
 	float static <-  0.0;
-	float dinamic <- 0.0 min: 0.0 update: dinamic-evaporation_per_cycle;
+	float dinamic <- 0.0 min: 0.0 max: 40.0 update: dinamic-evaporation_per_cycle;
 	//rgb color <- hsb(0.0,dinamic,1.0) update: hsb(0.0,dinamic,1.0);	
 } 
 
@@ -424,19 +422,26 @@ experiment Main type: gui autorun:false{
 }
 
 
-experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: false until: (number_of_people = 0 or cycle = 2000) parallel: false{
+experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: true until: (number_of_people = 0 or cycle = 2000) parallel: false{
    
-   float number <- 0.0;
+   float number <- 0.1;
    
-   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.1 ;
-   parameter "evaporation_per_cycle" var: evaporation_per_cycle min: 0.0 max: 0.33 step: 0.03 ;
+   
+   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.5 ;
+   parameter "evaporation_per_cycle" var: evaporation_per_cycle min: 0.03 max: 0.33 step: 0.03 ;
+   
+ 
+  
    
    // salva gli output da ciascuna delle #repeat simulation. Fai ask simulations per rivolgerti a ciascuna di queste
-   reflex save_results {
-   	ask simulations {
-		save (string(kd)+' '+string(ks)+' '+string(cycle)+' '+string(evaporation_per_cycle)+" "+string(number_of_people)) to:"tempo_vs_kd_evapo.txt" type:"text" rewrite: false;	
-   	}  	
-   }
+	reflex save_results{	  
+		int cpt <- 0;
+	   ask simulations {
+			save (string(cpt)+" "+string(self.kd)+' '+string(self.ks)+' '+string(self.cycle)+' '+string(self.evaporation_per_cycle)+" "+string(self.number_of_people)+" "+string(self.seed)) to:"tempo_vs_kd_evapo.txt" type:"text" rewrite: false;	 	
+	   		cpt <- cpt + 1;
+	   }
+	   
+	  }
    
    // printa sul terminale a che punto della simulazione è e l'ora
    reflex state when: number != kd {
