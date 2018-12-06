@@ -30,7 +30,7 @@ global {
 	//coefficiente scommessa
 	float k <- 1.0;
 	//evaporazione per ciclo
-	float evaporation_per_cycle <- 0.12;
+	float evaporation_per_cycle <- 0.0;
 	//seed lasciato dall'agente
 	float ferormone <- 1.0;
 	//valore massimo distanza sulla griglia
@@ -47,6 +47,14 @@ global {
 	
 	// init: viene fatto girare solo all'inizio del'programma
 	init {
+		//evaporazione per ciclo
+		if (kd >=10){
+			evaporation_per_cycle <- 0.3;
+		}
+		else{
+			evaporation_per_cycle <- ((0.5*ln((1+(kd/5-1))/(1-(kd/5-1))))+4.53803849)/(23.89136817);
+		}
+		
 		//write m;
 		// loading dei dati nella matrice per uscite e muri
 		matrix data <- matrix(file_mappa);
@@ -405,7 +413,6 @@ experiment Main type: gui autorun:false{
 	parameter "ks" var:ks; 
 	parameter "kd" var:kd;
 	parameter "ferormone" var:ferormone;
-	parameter "evaporation" var:evaporation_per_cycle;
 	parameter "k (scommessa)" var:k;
 	parameter "F max" var:Fmax;
 	parameter "n" var:n;
@@ -427,10 +434,8 @@ experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: true until: (numb
    float number <- 0.1;
    
    
-   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.5 ;
+   parameter "kd" var: kd min: 0.0 max: 4.5 step: 0.5 ;
    parameter "evaporation_per_cycle" var: evaporation_per_cycle min: 0.03 max: 0.33 step: 0.03 ;
-   
- 
   
    
    // salva gli output da ciascuna delle #repeat simulation. Fai ask simulations per rivolgerti a ciascuna di queste
