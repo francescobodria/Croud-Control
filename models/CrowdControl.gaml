@@ -434,15 +434,15 @@ experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: true until: (numb
    float number <- 0.1;
    
    
-   parameter "kd" var: kd min: 0.0 max: 4.5 step: 0.5 ;
-   parameter "evaporation_per_cycle" var: evaporation_per_cycle min: 0.03 max: 0.33 step: 0.03 ;
+   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.5 ;
+   parameter "ks" var: ks min: 0.0 max: 6.0 step: 0.5 ;
   
    
    // salva gli output da ciascuna delle #repeat simulation. Fai ask simulations per rivolgerti a ciascuna di queste
 	reflex save_results{	  
 		int cpt <- 0;
 	   ask simulations {
-			save (string(cpt)+" "+string(self.kd)+' '+string(self.ks)+' '+string(self.cycle)+' '+string(self.evaporation_per_cycle)+" "+string(self.number_of_people)+" "+string(self.seed)) to:"tempo_vs_kd_evapo.txt" type:"text" rewrite: false;	 	
+			save (string(cpt)+" "+string(self.kd)+' '+string(self.ks)+' '+string(self.cycle)+' '+string(self.number_of_people)+" "+string(self.seed)) to:"ks_vs_kd.txt" type:"text" rewrite: false;	 	
 	   		cpt <- cpt + 1;
 	   }
 	   
