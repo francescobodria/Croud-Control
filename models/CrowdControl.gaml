@@ -28,7 +28,7 @@ global {
 	//coefficiente dinamico
 	float kd <- 1.0;
 	//coefficiente scommessa
-	float k <- 1.0;
+	float k <- 0.25001;
 	//evaporazione per ciclo
 	float evaporation_per_cycle <- 0.0;
 	//seed lasciato dall'agente
@@ -39,7 +39,7 @@ global {
 	bool force <- false;
 	bool think <- true;
 	int R <-0;
-	int n<-1;
+	int n<-100;
 	float Fmax <- 10000.0;
 	float soglia <- 10000.0;
 	
@@ -52,7 +52,8 @@ global {
 			evaporation_per_cycle <- 0.3;
 		}
 		else{
-			evaporation_per_cycle <- ((0.5*ln((1+(kd/5-1))/(1-(kd/5-1))))+4.53803849)/(23.89136817);
+			//evaporation_per_cycle <- ((0.5*ln((1+(kd/5-1))/(1-(kd/5-1))))+4.53803849)/(23.89136817);
+			evaporation_per_cycle <- 0.21 ;
 		}
 		
 		//write m;
@@ -217,9 +218,13 @@ species people {
 			 	}
 			 }
 			 else {
+			 	
 			 	break;
 			 }
 			 
+		}
+		else{
+			break;
 		}
 		
 		}
@@ -242,6 +247,9 @@ species people {
 			 	break;
 			 }
 			 
+		}
+		else{
+			break;
 		}
 		
 		}
@@ -266,6 +274,9 @@ species people {
 			 }
 			 
 		}
+		else{
+			break;
+		}
 		
 		}
 			
@@ -285,6 +296,9 @@ species people {
 			 	break;
 			 }
 		
+		}
+		else{
+			break;
 		}
 	
 		}
@@ -415,7 +429,6 @@ experiment Main type: gui autorun:false{
 	parameter "ferormone" var:ferormone;
 	parameter "k (scommessa)" var:k;
 	parameter "F max" var:Fmax;
-	parameter "n" var:n;
 	parameter "soglia_morte" var:soglia;
 	
 		
@@ -433,16 +446,19 @@ experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: true until: (numb
    
    float number <- 0.1;
    
+   //ks e kd da 0 a 6 a passi 0.5 e k da 0.00001 a 1.00001 a passi di 0.25
+   parameter "kd" var: kd min: 0.0 max: 6.0 step: 0.5 ;
+   parameter "ks" var: ks min: 0.5 max: 6.5 step: 1.0 ;
+   //parameter "k" var: k min: 0.00001 max: 1.00001 step: 0.25;
    
-   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.5 ;
-   parameter "ks" var: ks min: 0.0 max: 6.0 step: 0.5 ;
+   
   
    
    // salva gli output da ciascuna delle #repeat simulation. Fai ask simulations per rivolgerti a ciascuna di queste
 	reflex save_results{	  
 		int cpt <- 0;
 	   ask simulations {
-			save (string(cpt)+" "+string(self.kd)+' '+string(self.ks)+' '+string(self.cycle)+' '+string(self.number_of_people)+" "+string(self.seed)) to:"ks_vs_kd.txt" type:"text" rewrite: false;	 	
+			save (string(cpt)+" "+string(self.kd)+' '+string(self.ks)+' '+string(self.cycle)+' '+string(self.number_of_people)+" "+string(self.seed)+" "+string(self.k)) to:"ks_vs_kd_vs_k.txt" type:"text" rewrite: false;	 	
 	   		cpt <- cpt + 1;
 	   }
 	   
