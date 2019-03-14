@@ -28,7 +28,7 @@ global {
 	//coefficiente dinamico
 	float kd <- 1.0;
 	//coefficiente scommessa
-	float k <- 0.25001;
+	float k <- 1.0;
 	//evaporazione per ciclo
 	float evaporation_per_cycle <- 0.0;
 	//seed lasciato dall'agente
@@ -40,7 +40,7 @@ global {
 	bool think <- true;
 	int R <-0;
 	int n<-100;
-	float Fmax <- 10000.0;
+	float Fmax <- 2.0;
 	float soglia <- 10000.0;
 	
 
@@ -53,7 +53,7 @@ global {
 		}
 		else{
 			//evaporation_per_cycle <- ((0.5*ln((1+(kd/5-1))/(1-(kd/5-1))))+4.53803849)/(23.89136817);
-			evaporation_per_cycle <- 0.21 ;
+			evaporation_per_cycle <- 0.21;
 		}
 		
 		//write m;
@@ -447,9 +447,9 @@ experiment tempo_vs_kd_evapo type: batch repeat: 12 keep_seed: true until: (numb
    float number <- 0.1;
    
    //ks e kd da 0 a 6 a passi 0.5 e k da 0.00001 a 1.00001 a passi di 0.25
-   parameter "kd" var: kd min: 0.0 max: 6.0 step: 0.5 ;
-   parameter "ks" var: ks min: 0.5 max: 6.5 step: 1.0 ;
-   //parameter "k" var: k min: 0.00001 max: 1.00001 step: 0.25;
+   parameter "kd" var: kd min: 0.0 max: 10.0 step: 0.5 ;
+   parameter "ks" var: ks min: 0.5 max: 9.5 step: 1.0 ;
+   parameter "k" var: k min: 0.00001 max: 0.50001 step: 0.25;
    
    
   
