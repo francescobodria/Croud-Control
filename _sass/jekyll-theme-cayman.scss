@@ -28,7 +28,7 @@
 body {
   padding: 0;
   margin: 0;
-  background-image: url("./gama_logo.jpg");
+  //background-image: url("./gama_logo.jpg");
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
@@ -66,10 +66,10 @@ a {
   display: inline-block;
   margin-bottom: 1rem;
   color: rgba(20,89,140,1.0);//rgba(255, 255, 255, 0.7);
-  background-color: rgb(234,158,37,0.8);
+  background-color: rgba(234,158,37,0.8);
   border-color: rgba(208,69,10,0.8);
   border-style: solid;
-  border-width: 1px;
+  border-width: 3px;
   border-radius: 0.3rem;
   transition: color 0.2s, background-color 0.2s, border-color 0.2s;
 
