@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # GAMA CrowdControl
 
 Regola Fondamentale:
