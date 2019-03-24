@@ -1,0 +1,3 @@
+In questo file vario ks tra 0.6 e 6.5 a passi di 1, kd da 0 a 6 a passi di 0.5 a k a passi di 0.25
+
+ks_vs_kd_vs_k.txt questo è quello fatto da Francesco in cui ci sono tutte le simulazioni

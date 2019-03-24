@@ -1,0 +1,1 @@
+In questo file ci sono le uscite al variare di ks e kd nel caso in cui l’evaporazione è fissa a 0.21
