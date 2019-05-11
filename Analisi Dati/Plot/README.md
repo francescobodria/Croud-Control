@@ -1,11 +1,11 @@
 Plot strutturati nel seguente modo:
 
 - Il nome del file indica il parametro che è stato fissato con il relativo valore, e dopo l'underscore c'è il parametro
-che sta sule ascisse
+che sta sulle ascisse
 
 - Ogni file ha 4 plot:
     . due bar plot, in cui il primo fatto con i dati completi ed il secondo fatto con tutti i tempi di uscita strettamente 
-    inferiori a 2000
+    inferiori a 2000 ('drop' nel titolo del plot)
     . due plot con il valore della varianza, uno con tutti i dati e l'altro con quelli inferiori a 2000
     
     
