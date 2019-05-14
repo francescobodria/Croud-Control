@@ -1,0 +1,27 @@
+k e kd non sono correlati perchè plot tutti uguali
+
+ks è determinante per lo stato del sistema, esiste un ks critica che cambia lo stato del sistema da caotico a deterministico
+
+ks determina prevalentemente il comportamento degli agenti
+
+- guardiamo se per k=0.25 kd=6, ks = 1.5 se siamo arrivati a 2000 cicli e con quanta gente rimasta
+
+ordine di grandezza al variare di ks diminuisce e poi flip per k = 0
+
+----------------- Forze
+
+kd non lo sente con k fissato a 0
+
+kd è piatto mentre k diventa parametro importante per le forze
+
+con le forze il tempo di uscita dipende solo dal fatto che k sia diverso da 0 con ks alto.
+nel momento in cui k è diverso da 0 c'è qualcuno che spinge e gli agenti risultano incastrati
+con ks basso l'effetto della variazione k è trascurabile
+
+- plot al variare di k con kd e ks fissati
+
+- mettere assieme grafici ks=2.5 con e senza forza assieme
+la varianza aumenta di un botto
+
+- mettere assieme k=0.5 
+con le forze tutto diventa più caotico
